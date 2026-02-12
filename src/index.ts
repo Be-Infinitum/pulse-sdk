@@ -2,6 +2,7 @@ import { HttpClient } from './client'
 import { PaymentLinksResource } from './resources/payment-links'
 import { WebhooksResource } from './resources/webhooks'
 import { verifyWebhookSignature } from './webhooks/verify'
+import { mountCheckout } from './checkout/checkout'
 import type { PulseConfig } from './types'
 
 export class Pulse {
@@ -12,6 +13,10 @@ export class Pulse {
 
   static webhooks = {
     verifySignature: verifyWebhookSignature,
+  }
+
+  static checkout = {
+    mount: mountCheckout,
   }
 
   constructor(config: string | PulseConfig) {
@@ -48,3 +53,11 @@ export type {
   RateLimitInfo,
   ApiErrorResponse,
 } from './types'
+
+export { mountCheckout } from './checkout/checkout'
+export type {
+  CheckoutMountOptions,
+  CheckoutPayment,
+  CheckoutError,
+  CheckoutInstance,
+} from './checkout/types'

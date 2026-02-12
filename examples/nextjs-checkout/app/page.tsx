@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { EmbeddedCheckout } from './EmbeddedCheckout'
 
 interface PaymentLink {
   id: string
@@ -178,7 +179,19 @@ export default function Home() {
         </section>
       )}
 
-      {/* Section 3: Webhook Event Log */}
+      {/* Section 3: Embedded Checkout */}
+      {createdLink && (
+        <section className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+          <h2 className="text-lg font-semibold mb-4">Embedded Checkout</h2>
+          <p className="text-gray-400 text-sm mb-4">
+            This is the embeddable checkout widget rendered via{' '}
+            <code className="bg-gray-800 px-1.5 py-0.5 rounded text-xs">Pulse.checkout.mount()</code>
+          </p>
+          <EmbeddedCheckout linkId={createdLink.id} />
+        </section>
+      )}
+
+      {/* Section 4: Webhook Event Log */}
       <section className="bg-gray-900 rounded-lg p-6 border border-gray-800">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Webhook Event Log</h2>
