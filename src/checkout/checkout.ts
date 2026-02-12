@@ -7,6 +7,49 @@ import type {
 
 const DEFAULT_BASE_URL = 'https://pulse.beinfi.com'
 
+/**
+ * Mount the Pulse checkout widget into a DOM element.
+ * Embeds an iframe-based checkout that handles payment flow (crypto, PIX)
+ * and communicates back via postMessage events.
+ *
+ * @param selector - A CSS selector string or an HTMLElement to mount the checkout into.
+ * @param options - Checkout configuration including the payment link ID and event callbacks.
+ * @returns A {@link CheckoutInstance} with `unmount()` and `on()` methods.
+ * @throws {Error} If the container element is not found.
+ *
+ * @example
+ * ```typescript
+ * import { Pulse } from '@infi/pulse-sdk'
+ *
+ * // Mount into a div
+ * const checkout = Pulse.checkout.mount('#checkout-container', {
+ *   linkId: 'abc-123',
+ *   theme: {
+ *     background: '#0f0f23',
+ *     accent: '#6366f1',
+ *   },
+ *   onReady: () => console.log('Checkout loaded'),
+ *   onSuccess: (payment) => {
+ *     console.log('Payment confirmed!', payment.paymentIntentId)
+ *     checkout.unmount()
+ *   },
+ *   onError: (err) => console.error('Payment failed:', err.message),
+ * })
+ *
+ * // Alternative: use .on() event listeners
+ * checkout.on('success', (payment) => {
+ *   window.location.href = '/thank-you'
+ * })
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Standalone import
+ * import { mountCheckout } from '@infi/pulse-sdk'
+ *
+ * const instance = mountCheckout('#checkout', { linkId: 'abc-123' })
+ * ```
+ */
 export function mountCheckout(
   selector: string | HTMLElement,
   options: CheckoutMountOptions,

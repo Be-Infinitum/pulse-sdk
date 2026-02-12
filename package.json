@@ -1,5 +1,5 @@
 {
-  "name": "@pulse-pay/sdk",
+  "name": "@infi/pulse-sdk",
   "version": "0.1.0",
   "description": "TypeScript SDK for the Pulse Payment Platform API",
   "main": "./dist/index.cjs",
@@ -18,11 +18,34 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch"
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "pulse",
+    "payments",
+    "crypto",
+    "stablecoin",
+    "usdc",
+    "usdt",
+    "pix",
+    "sdk",
+    "api",
+    "fintech",
+    "brazil"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Be-Infinitum/pulse-sdk.git"
+  },
+  "homepage": "https://github.com/Be-Infinitum/pulse-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/Be-Infinitum/pulse-sdk/issues"
   },
   "devDependencies": {
     "@types/node": "^25.2.3",
@@ -30,5 +53,8 @@
     "typescript": "^5.6.0"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "packageManager": "yarn@4.12.0+sha512.f45ab632439a67f8bc759bf32ead036a1f413287b9042726b7cc4818b7b49e14e9423ba49b18f9e06ea4941c1ad062385b1d8760a8d5091a1a31e5f6219afca8"
 }

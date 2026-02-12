@@ -1,0 +1,31 @@
+# @infi/pulse-sdk
+
+> TypeScript SDK for the Pulse Payment Platform. Create payment links,
+> process crypto payments (USDC/USDT on Solana) and PIX payments,
+> verify webhooks, and embed checkout widgets.
+> Zero runtime dependencies.
+
+## Getting Started
+- [README](README.md): Installation, quick start, and full API reference
+- [Quickstart Guide](docs/quickstart.md): Complete integration walkthrough
+- [Publishing Guide](COMO_PUBLICAR.md): How to publish to npm
+
+## API Reference
+- [Types](src/types.ts): All TypeScript interfaces (PulseConfig, PaymentLink, PaymentIntent, Webhook, etc.)
+- [Payment Links](src/resources/payment-links.ts): Create, list, get payment links and their intents
+- [Webhooks](src/resources/webhooks.ts): Create, list, delete webhook subscriptions
+- [Webhook Verification](src/webhooks/verify.ts): HMAC-SHA256 signature verification
+- [Checkout Widget](src/checkout/checkout.ts): Embed iframe-based checkout
+- [Checkout Types](src/checkout/types.ts): CheckoutMountOptions, CheckoutTheme, CheckoutInstance
+- [Errors](src/errors.ts): PulseError, PulseApiError, PulseAuthenticationError, PulseRateLimitError
+- [HTTP Client](src/client.ts): Low-level fetch wrapper with auth and error handling
+
+## OpenAPI Specification
+- [OpenAPI 3.1 Spec](openapi.yaml): Full API specification for the Pulse backend
+
+## Agent Context
+- [AGENTS.md](AGENTS.md): Universal AI agent instructions
+- [CLAUDE.md](CLAUDE.md): Claude-specific context
+
+## Examples
+- [Next.js Checkout Example](examples/nextjs-checkout/): Full working example app

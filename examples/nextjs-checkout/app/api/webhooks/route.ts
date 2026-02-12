@@ -1,4 +1,4 @@
-import { Pulse } from '@pulse-pay/sdk'
+import { Pulse } from '@infi/pulse-sdk'
 import { NextResponse } from 'next/server'
 import { events } from './events'
 

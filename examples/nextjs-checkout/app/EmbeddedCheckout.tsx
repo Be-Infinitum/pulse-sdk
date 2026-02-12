@@ -1,6 +1,6 @@
 'use client'
 
-import { Pulse } from '@pulse-pay/sdk'
+import { Pulse } from '@infi/pulse-sdk'
 import { useEffect, useRef, useState } from 'react'
 
 interface EmbeddedCheckoutProps {

@@ -1,17 +1,17 @@
-# @pulse-pay/sdk
+# @infi/pulse-sdk
 
 TypeScript SDK for the [Pulse Payment Platform](https://beinfi.com) API (`/api/v1`).
 
 ## Install
 
 ```bash
-npm install @pulse-pay/sdk
+npm install @infi/pulse-sdk
 ```
 
 ## Usage
 
 ```typescript
-import { Pulse } from '@pulse-pay/sdk'
+import { Pulse } from '@infi/pulse-sdk'
 
 const pulse = new Pulse('sk_live_...')
 // or with options
@@ -59,7 +59,7 @@ await pulse.webhooks.delete('webhook-id')
 ### Verify Webhook Signatures
 
 ```typescript
-import { Pulse } from '@pulse-pay/sdk'
+import { Pulse } from '@infi/pulse-sdk'
 
 const isValid = Pulse.webhooks.verifySignature(rawBody, signatureHeader, secret)
 ```
@@ -69,7 +69,7 @@ The signature header format is `sha256={hmac_hex}`, sent as `X-Pulse-Signature`.
 ## Error Handling
 
 ```typescript
-import { PulseApiError, PulseAuthenticationError, PulseRateLimitError } from '@pulse-pay/sdk'
+import { PulseApiError, PulseAuthenticationError, PulseRateLimitError } from '@infi/pulse-sdk'
 
 try {
   await pulse.paymentLinks.create({ title: 'Test', amount: '10.00' })

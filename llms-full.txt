@@ -1,0 +1,547 @@
+# @infi/pulse-sdk — Complete SDK Reference
+
+> TypeScript SDK for the Pulse Payment Platform. Create payment links,
+> process crypto payments (USDC/USDT on Solana) and PIX payments,
+> verify webhooks, and embed checkout widgets.
+> Zero runtime dependencies.
+
+## Installation
+
+```bash
+npm install @infi/pulse-sdk
+```
+
+## Quick Start
+
+```typescript
+import { Pulse } from '@infi/pulse-sdk'
+
+// Initialize with API key
+const pulse = new Pulse('sk_live_...')
+
+// Create a payment link
+const link = await pulse.paymentLinks.create({
+  title: 'Web Development',
+  amount: '150.00',
+  currency: 'USD',
+  description: 'Landing page development',
+})
+
+// Verify webhook signatures (static, no instance needed)
+const isValid = Pulse.webhooks.verifySignature(rawBody, signature, secret)
+
+// Embed checkout widget (browser only)
+const checkout = Pulse.checkout.mount('#container', { linkId: link.id })
+```
+
+---
+
+## Pulse Class
+
+The main entry point. Create an instance with your API key to access resources.
+
+```typescript
+class Pulse {
+  // Instance resources
+  readonly paymentLinks: PaymentLinksResource
+  readonly webhooks: WebhooksResource
+
+  // Static utilities (no instance needed)
+  static webhooks: { verifySignature: typeof verifyWebhookSignature }
+  static checkout: { mount: typeof mountCheckout }
+
+  constructor(config: string | PulseConfig)
+}
+```
+
+**Constructor:**
+- `new Pulse('sk_live_...')` — string shorthand
+- `new Pulse({ apiKey: 'sk_live_...', baseUrl: 'https://api.beinfi.com' })` — config object
+- Throws `PulseError` if the API key doesn't start with `"sk_live_"`
+
+---
+
+## Configuration
+
+```typescript
+interface PulseConfig {
+  /** API key starting with `sk_live_`. */
+  apiKey: string
+  /** Override the API base URL. Defaults to `https://api.beinfi.com`. */
+  baseUrl?: string
+}
+```
+
+---
+
+## Payment Links
+
+Access via `pulse.paymentLinks`.
+
+### create(params)
+
+Create a new payment link.
+
+```typescript
+const link = await pulse.paymentLinks.create({
+  title: 'Web Development',       // required
+  amount: '150.00',                // required, decimal string
+  currency: 'USD',                 // optional, 'USD' | 'BRL', default 'USD'
+  description: 'Landing page dev', // optional
+})
+```
+
+**Parameters:**
+
+```typescript
+interface CreatePaymentLinkParams {
+  title: string           // Human-readable title shown to the payer
+  amount: string          // Decimal amount as string (e.g. "99.90")
+  description?: string    // Optional description on checkout page
+  currency?: 'USD' | 'BRL' // Defaults to "USD"
+}
+```
+
+**Returns:** `Promise<PaymentLink>`
+
+### list(params?)
+
+List payment links with pagination.
+
+```typescript
+const links = await pulse.paymentLinks.list({ limit: 10, offset: 0 })
+```
+
+**Parameters:**
+
+```typescript
+interface ListPaymentLinksParams {
+  limit?: number   // Max results, default 20
+  offset?: number  // Skip N results, default 0
+}
+```
+
+**Returns:** `Promise<PaymentLink[]>`
+
+### get(linkId)
+
+Get a single payment link by ID.
+
+```typescript
+const link = await pulse.paymentLinks.get('uuid-here')
+```
+
+**Returns:** `Promise<PaymentLink>`
+**Throws:** `PulseApiError` with status 404 if not found.
+
+### listIntents(linkId)
+
+List payment intents (payment attempts) for a link.
+
+```typescript
+const intents = await pulse.paymentLinks.listIntents('uuid-here')
+const confirmed = intents.filter(i => i.status === 'confirmed')
+```
+
+**Returns:** `Promise<PaymentIntent[]>`
+
+### PaymentLink Type
+
+```typescript
+interface PaymentLink {
+  id: string              // UUID
+  title: string
+  description: string | null
+  amount: string          // Decimal string (e.g. "100.00")
+  currency: string        // "USD" or "BRL"
+  status: string          // "active" or "inactive"
+  slug: string            // URL-friendly slug
+  userId: string          // UUID
+  createdAt: string       // ISO 8601
+  updatedAt: string       // ISO 8601
+}
+```
+
+### PaymentIntent Type
+
+```typescript
+interface PaymentIntent {
+  id: string
+  paymentLinkId: string
+  amount: string
+  currency: string
+  status: string          // "pending" | "observed" | "confirmed" | "failed" | "expired"
+  method: string | null   // "crypto" | "pix" | null
+  txHash: string | null   // Blockchain tx hash
+  confirmedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+```
+
+---
+
+## Webhooks
+
+Access via `pulse.webhooks`.
+
+### create(params)
+
+Create a webhook subscription. **The `secret` is only returned once — store it securely.**
+
+```typescript
+const wh = await pulse.webhooks.create({
+  url: 'https://example.com/webhook',
+  events: ['payment.confirmed'],
+})
+console.log(wh.secret) // 64-char hex — save this!
+```
+
+**Parameters:**
+
+```typescript
+interface CreateWebhookParams {
+  url: string      // HTTPS URL for webhook POST requests
+  events: string[] // Event types (e.g. ["payment.confirmed"])
+}
+```
+
+**Returns:** `Promise<WebhookCreated>` (includes `secret`)
+
+### list()
+
+List all webhook subscriptions.
+
+```typescript
+const webhooks = await pulse.webhooks.list()
+```
+
+**Returns:** `Promise<Webhook[]>`
+
+### delete(id)
+
+Delete a webhook subscription.
+
+```typescript
+await pulse.webhooks.delete('webhook-uuid')
+```
+
+**Returns:** `Promise<void>`
+
+### Webhook Types
+
+```typescript
+interface Webhook {
+  id: string
+  url: string
+  events: string[]
+  isActive: boolean
+  createdAt: string
+}
+
+interface WebhookCreated extends Webhook {
+  secret: string  // 64-char hex, only returned at creation
+}
+```
+
+---
+
+## Webhook Verification
+
+Verify that webhook requests came from Pulse using HMAC-SHA256.
+
+### Pulse.webhooks.verifySignature(rawBody, signatureHeader, secret)
+
+```typescript
+// Static method — no Pulse instance needed
+const isValid = Pulse.webhooks.verifySignature(
+  rawBody,                              // raw request body string
+  req.headers['x-pulse-signature'],     // "sha256=..." header
+  process.env.PULSE_WEBHOOK_SECRET!,    // your webhook secret
+)
+```
+
+Or as a standalone import:
+
+```typescript
+import { verifyWebhookSignature } from '@infi/pulse-sdk'
+const isValid = verifyWebhookSignature(rawBody, signatureHeader, secret)
+```
+
+**Signature format:** `sha256={hmac_hex}`
+**Header:** `X-Pulse-Signature`
+**Algorithm:** HMAC-SHA256 with timing-safe comparison
+
+### Express Example
+
+```typescript
+app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const isValid = Pulse.webhooks.verifySignature(
+    req.body.toString(),
+    req.headers['x-pulse-signature'] as string,
+    process.env.PULSE_WEBHOOK_SECRET!,
+  )
+  if (!isValid) return res.status(401).send('Invalid signature')
+
+  const payload: WebhookPayload = JSON.parse(req.body.toString())
+  console.log('Payment confirmed:', payload.paymentIntentId)
+  res.sendStatus(200)
+})
+```
+
+### Next.js App Router Example
+
+```typescript
+// app/api/webhook/route.ts
+export async function POST(request: Request) {
+  const rawBody = await request.text()
+  const signature = request.headers.get('x-pulse-signature')!
+
+  const isValid = Pulse.webhooks.verifySignature(
+    rawBody, signature, process.env.PULSE_WEBHOOK_SECRET!,
+  )
+  if (!isValid) return new Response('Invalid signature', { status: 401 })
+
+  const payload: WebhookPayload = JSON.parse(rawBody)
+  // process payment...
+  return new Response('OK', { status: 200 })
+}
+```
+
+### WebhookPayload Type
+
+```typescript
+interface WebhookPayload {
+  paymentIntentId: string
+  amount: string
+  currency: string
+  method: string       // "crypto" | "pix"
+  confirmedAt: string  // ISO 8601
+  txHash?: string      // present for crypto payments
+}
+```
+
+---
+
+## Checkout Widget
+
+Mount an iframe-based checkout widget. Browser-only.
+
+### Pulse.checkout.mount(selector, options)
+
+```typescript
+const checkout = Pulse.checkout.mount('#checkout-container', {
+  linkId: 'payment-link-id',
+  theme: {
+    background: '#0f0f23',
+    foreground: '#ffffff',
+    accent: '#6366f1',
+  },
+  onReady: () => console.log('Checkout loaded'),
+  onSuccess: (payment) => {
+    console.log('Paid!', payment.paymentIntentId)
+    checkout.unmount()
+  },
+  onError: (err) => console.error('Error:', err.message),
+})
+
+// Event listener alternative
+checkout.on('success', (payment) => {
+  window.location.href = '/thank-you'
+})
+
+// Clean up
+checkout.unmount()
+```
+
+Or as a standalone import:
+
+```typescript
+import { mountCheckout } from '@infi/pulse-sdk'
+const instance = mountCheckout('#checkout', { linkId: 'abc-123' })
+```
+
+### React Example
+
+```tsx
+import { useEffect, useRef } from 'react'
+import { Pulse } from '@infi/pulse-sdk'
+
+function Checkout({ linkId }: { linkId: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!ref.current) return
+    const instance = Pulse.checkout.mount(ref.current, {
+      linkId,
+      onSuccess: (payment) => console.log('Paid!', payment),
+    })
+    return () => instance.unmount()
+  }, [linkId])
+
+  return <div ref={ref} />
+}
+```
+
+### Checkout Types
+
+```typescript
+interface CheckoutMountOptions {
+  linkId: string
+  baseUrl?: string              // default: "https://pulse.beinfi.com"
+  theme?: CheckoutTheme
+  onReady?: () => void
+  onSuccess?: (payment: CheckoutPayment) => void
+  onError?: (error: CheckoutError) => void
+  onClose?: () => void
+}
+
+interface CheckoutTheme {
+  background?: string
+  foreground?: string
+  card?: string
+  accent?: string
+  accentForeground?: string
+}
+
+interface CheckoutPayment {
+  paymentIntentId: string
+  amount: string
+  currency: string
+  method: string
+  txHash?: string
+}
+
+interface CheckoutError {
+  message: string
+  code?: string
+}
+
+interface CheckoutInstance {
+  unmount: () => void
+  on: (event: 'ready' | 'success' | 'error' | 'close', handler: (...args: any[]) => void) => void
+}
+```
+
+---
+
+## Error Handling
+
+All SDK errors extend `PulseError`:
+
+```
+PulseError (base)
+├── PulseApiError (any API error)
+│   ├── PulseAuthenticationError (401)
+│   └── PulseRateLimitError (429)
+```
+
+### Usage
+
+```typescript
+import {
+  PulseApiError,
+  PulseAuthenticationError,
+  PulseRateLimitError,
+} from '@infi/pulse-sdk'
+
+try {
+  await pulse.paymentLinks.create({ title: 'Test', amount: '10.00' })
+} catch (err) {
+  if (err instanceof PulseAuthenticationError) {
+    // 401 — invalid API key
+  } else if (err instanceof PulseRateLimitError) {
+    // 429 — retry after err.retryAfter seconds
+    console.log(`Retry in ${err.retryAfter}s`)
+  } else if (err instanceof PulseApiError) {
+    // Other: err.status, err.errorCode, err.message
+    console.error(`${err.status}: [${err.errorCode}] ${err.message}`)
+  }
+}
+```
+
+### Error Properties
+
+```typescript
+class PulseError extends Error {
+  message: string
+}
+
+class PulseApiError extends PulseError {
+  status: number          // HTTP status code
+  errorCode: string       // Machine-readable code (e.g. "unauthorized")
+  rateLimit?: RateLimitInfo
+}
+
+class PulseAuthenticationError extends PulseApiError {
+  // status = 401, errorCode = "unauthorized"
+}
+
+class PulseRateLimitError extends PulseApiError {
+  // status = 429, errorCode = "rate_limit_exceeded"
+  retryAfter: number      // seconds to wait
+}
+```
+
+---
+
+## Rate Limiting
+
+The API returns rate limit headers on every response:
+
+```typescript
+interface RateLimitInfo {
+  limit: number      // Max requests per minute (free=100, pro=1000, enterprise=5000)
+  remaining: number  // Remaining in current window
+  reset: number      // Unix timestamp when window resets
+}
+```
+
+Available on `PulseApiError.rateLimit` and `PulseRateLimitError.rateLimit`.
+
+---
+
+## API Authentication
+
+API keys use the format `sk_live_{base64url_encoded_bytes}`.
+Sent as: `Authorization: Bearer sk_live_...`
+Created in the Pulse dashboard under **Developers > API Keys**.
+
+---
+
+## All Exports
+
+```typescript
+// Main class
+export class Pulse
+
+// Standalone functions
+export function verifyWebhookSignature(rawBody, signatureHeader, secret): boolean
+export function mountCheckout(selector, options): CheckoutInstance
+
+// Error classes
+export class PulseError extends Error
+export class PulseApiError extends PulseError
+export class PulseAuthenticationError extends PulseApiError
+export class PulseRateLimitError extends PulseApiError
+
+// Types
+export type PulseConfig
+export type CreatePaymentLinkParams
+export type PaymentLink
+export type ListPaymentLinksParams
+export type PaymentIntent
+export type ReceivedPayment
+export type ListReceivedPaymentsParams
+export type CreateWebhookParams
+export type Webhook
+export type WebhookCreated
+export type WebhookPayload
+export type RateLimitInfo
+export type ApiErrorResponse
+export type CheckoutMountOptions
+export type CheckoutPayment
+export type CheckoutError
+export type CheckoutInstance
+export type CheckoutTheme
+```
