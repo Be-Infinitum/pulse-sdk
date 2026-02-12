@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { EmbeddedCheckout } from './EmbeddedCheckout'
 
 interface PaymentLink {
@@ -64,7 +64,7 @@ export default function Home() {
   }
 
   function getPaymentUrl(link: PaymentLink) {
-    return `https://pay.beinfi.com/${link.slug}/${link.id}`
+    return `https://pulse.beinfi.com/pay/${link.id}`
   }
 
   async function copyUrl() {

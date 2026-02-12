@@ -18,7 +18,7 @@ export function EmbeddedCheckout({ linkId }: EmbeddedCheckoutProps) {
 
     instanceRef.current = Pulse.checkout.mount(containerRef.current, {
       linkId,
-      baseUrl: process.env.NEXT_PUBLIC_PULSE_CHECKOUT_URL ?? 'https://pay.beinfi.com',
+      baseUrl: process.env.NEXT_PUBLIC_PULSE_CHECKOUT_URL ?? 'https://pulse.beinfi.com',
       onReady() {
         setStatus('ready')
       },

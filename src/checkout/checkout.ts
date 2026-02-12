@@ -5,7 +5,7 @@ import type {
   CheckoutError,
 } from './types'
 
-const DEFAULT_BASE_URL = 'https://pay.beinfi.com'
+const DEFAULT_BASE_URL = 'https://pulse.beinfi.com'
 
 export function mountCheckout(
   selector: string | HTMLElement,
