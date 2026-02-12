@@ -47,6 +47,12 @@ export function mountCheckout(
 
     switch (type) {
       case 'pulse:ready':
+        if (options.theme) {
+          iframe.contentWindow?.postMessage(
+            { type: 'pulse:config', theme: options.theme },
+            allowedOrigin,
+          )
+        }
         options.onReady?.()
         emit('ready')
         break

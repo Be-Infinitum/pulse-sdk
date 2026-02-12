@@ -60,4 +60,5 @@ export type {
   CheckoutPayment,
   CheckoutError,
   CheckoutInstance,
+  CheckoutTheme,
 } from './checkout/types'

@@ -11,9 +11,18 @@ export interface CheckoutError {
   code?: string
 }
 
+export interface CheckoutTheme {
+  background?: string
+  foreground?: string
+  card?: string
+  accent?: string
+  accentForeground?: string
+}
+
 export interface CheckoutMountOptions {
   linkId: string
   baseUrl?: string
+  theme?: CheckoutTheme
   onReady?: () => void
   onSuccess?: (payment: CheckoutPayment) => void
   onError?: (error: CheckoutError) => void
