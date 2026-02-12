@@ -35,7 +35,6 @@ export function mountCheckout(
   iframe.src = `${baseUrl}/embed/pay/${options.linkId}`
   iframe.style.width = '100%'
   iframe.style.border = 'none'
-  iframe.style.minHeight = '600px'
   iframe.style.colorScheme = 'normal'
   iframe.setAttribute('allowtransparency', 'true')
   iframe.allow = 'clipboard-write'
