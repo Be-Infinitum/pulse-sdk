@@ -1,7 +1,7 @@
 'use client'
 
+import { Pulse } from '@pulse-pay/sdk'
 import { useEffect, useRef, useState } from 'react'
-import { Pulse } from '@anthropic-ai/pulse-sdk'
 
 interface EmbeddedCheckoutProps {
   linkId: string
