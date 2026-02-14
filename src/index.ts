@@ -1,6 +1,7 @@
 import { HttpClient } from './client'
 import { PaymentLinksResource } from './resources/payment-links'
 import { WebhooksResource } from './resources/webhooks'
+import { MeteringResource } from './resources/metering'
 import { verifyWebhookSignature } from './webhooks/verify'
 import { mountCheckout } from './checkout/checkout'
 import type { PulseConfig } from './types'
@@ -40,6 +41,8 @@ export class Pulse {
   public readonly paymentLinks: PaymentLinksResource
   /** Resource for creating, listing, and deleting webhook subscriptions. */
   public readonly webhooks: WebhooksResource
+  /** Resource for usage-based metering, tracking events, and querying usage. */
+  public readonly metering: MeteringResource
 
   private readonly client: HttpClient
 
@@ -98,6 +101,7 @@ export class Pulse {
     this.client = new HttpClient(apiKey, baseUrl)
     this.paymentLinks = new PaymentLinksResource(this.client)
     this.webhooks = new WebhooksResource(this.client)
+    this.metering = new MeteringResource(this.client)
   }
 }
 
@@ -124,6 +128,15 @@ export type {
   WebhookPayload,
   RateLimitInfo,
   ApiErrorResponse,
+  TrackEventParams,
+  TrackEventResponse,
+  BatchTrackResponse,
+  UsageQuery,
+  UsageItem,
+  UsageResponse,
+  CreateCustomerParams,
+  MeteringProduct,
+  ProductCustomer,
 } from './types'
 
 export { mountCheckout } from './checkout/checkout'

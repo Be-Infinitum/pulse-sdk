@@ -276,6 +276,112 @@ export interface WebhookPayload {
 }
 
 // ============================================
+// Metering
+// ============================================
+
+/**
+ * Parameters for tracking a usage event.
+ *
+ * @example
+ * ```typescript
+ * await pulse.metering.track({
+ *   meterId: 'tokens',
+ *   customerId: 'user_123',
+ *   value: 1500,
+ *   metadata: { model: 'gpt-4' }
+ * })
+ * ```
+ */
+export interface TrackEventParams {
+  /** Idempotency key. Auto-generated if not provided. */
+  eventId?: string
+  /** Meter ID or slug to track against. */
+  meterId: string
+  /** Your customer's identifier (externalId). */
+  customerId: string
+  /** Quantity consumed (e.g. number of tokens). */
+  value: number | string
+  /** When the event occurred. Defaults to now. */
+  timestamp?: Date
+  /** Additional metadata attached to the event. */
+  metadata?: Record<string, unknown>
+}
+
+/** A tracked event as returned by the API. */
+export interface TrackEventResponse {
+  id: string
+  eventId: string
+  meterId: string
+  customerId: string
+  value: string
+  timestamp: string
+  createdAt: string
+}
+
+/** Result of a batch track operation. */
+export interface BatchTrackResponse {
+  accepted: number
+  failed: number
+  results: TrackEventResponse[]
+  errors?: Array<{ eventId?: string; error: string }>
+}
+
+/** Query parameters for aggregated usage. */
+export interface UsageQuery {
+  customerId?: string
+  startDate?: string
+  endDate?: string
+}
+
+/** A single meter's aggregated usage. */
+export interface UsageItem {
+  meterId: string
+  meterName: string
+  unit: string
+  unitPrice: string
+  totalValue: string
+  totalAmount: string
+  eventCount: number
+}
+
+/** Aggregated usage response. */
+export interface UsageResponse {
+  data: UsageItem[]
+}
+
+/** Parameters for creating a customer on a product. */
+export interface CreateCustomerParams {
+  externalId: string
+  name?: string
+  email?: string
+  metadata?: Record<string, unknown>
+}
+
+/** A product with meters. */
+export interface MeteringProduct {
+  id: string
+  name: string
+  description?: string
+  status: string
+  meters: Array<{
+    id: string
+    name: string
+    displayName: string
+    unit: string
+    unitPrice: string
+  }>
+}
+
+/** A customer linked to a product. */
+export interface ProductCustomer {
+  id: string
+  externalId: string
+  name?: string | null
+  email?: string | null
+  createdAt: string
+}
+
+// ============================================
 // Rate Limit
 // ============================================
 
