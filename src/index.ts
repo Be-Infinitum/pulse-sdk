@@ -135,7 +135,10 @@ export type {
   UsageItem,
   UsageResponse,
   CreateCustomerParams,
+  CreateProductParams,
+  CreateMeterParams,
   MeteringProduct,
+  Meter,
   ProductCustomer,
 } from './types'
 

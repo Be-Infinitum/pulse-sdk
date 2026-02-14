@@ -1,0 +1,15 @@
+{
+  "name": "ai-agent-example",
+  "private": true,
+  "scripts": {
+    "setup": "bun run src/setup.ts",
+    "server": "bun run src/agent-server.ts",
+    "test-client": "bun run src/test-client.ts"
+  },
+  "dependencies": {
+    "@infi/pulse-sdk": "workspace:*",
+    "ai": "^4",
+    "@ai-sdk/openai": "^1",
+    "@ai-sdk/google": "^1"
+  }
+}

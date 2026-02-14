@@ -6,7 +6,10 @@ import type {
   UsageQuery,
   UsageResponse,
   CreateCustomerParams,
+  CreateProductParams,
+  CreateMeterParams,
   MeteringProduct,
+  Meter,
   ProductCustomer,
 } from '../types'
 
@@ -142,6 +145,56 @@ export class MeteringResource {
    */
   async listProducts(): Promise<MeteringProduct[]> {
     return this.client.request<MeteringProduct[]>('GET', '/metering/products')
+  }
+
+  /**
+   * Create a new product.
+   *
+   * @param data - Product data (name, optional description).
+   * @returns The created product object.
+   *
+   * @example
+   * ```typescript
+   * const product = await pulse.metering.createProduct({
+   *   name: 'AI Agent',
+   *   description: 'Usage-based AI agent billing',
+   * })
+   * ```
+   */
+  async createProduct(data: CreateProductParams): Promise<MeteringProduct> {
+    return this.client.request<MeteringProduct>(
+      'POST',
+      '/metering/products',
+      { body: data }
+    )
+  }
+
+  /**
+   * Create a new meter on a product.
+   *
+   * @param productId - The product UUID.
+   * @param data - Meter data (name, displayName, unit, unitPrice).
+   * @returns The created meter object.
+   *
+   * @example
+   * ```typescript
+   * const meter = await pulse.metering.createMeter('product-id', {
+   *   name: 'tokens',
+   *   displayName: 'AI Tokens',
+   *   unit: 'token',
+   *   unitPrice: '0.0001',
+   * })
+   * ```
+   */
+  async createMeter(
+    productId: string,
+    data: CreateMeterParams
+  ): Promise<Meter> {
+    return this.client.request<Meter>(
+      'POST',
+      `/metering/products/${productId}/meters`,
+      { body: data }
+    )
   }
 
   /**

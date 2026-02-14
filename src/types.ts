@@ -357,6 +357,30 @@ export interface CreateCustomerParams {
   metadata?: Record<string, unknown>
 }
 
+/** Parameters for creating a product. */
+export interface CreateProductParams {
+  name: string
+  description?: string
+}
+
+/** Parameters for creating a meter on a product. */
+export interface CreateMeterParams {
+  name: string
+  displayName: string
+  unit: string
+  unitPrice: string
+}
+
+/** A meter object returned by the API. */
+export interface Meter {
+  id: string
+  name: string
+  displayName: string
+  unit: string
+  unitPrice: string
+  status: string
+}
+
 /** A product with meters. */
 export interface MeteringProduct {
   id: string
