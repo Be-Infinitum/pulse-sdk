@@ -17,4 +17,13 @@ export default defineConfig([
     target: 'es2020',
     splitting: false,
   },
+  {
+    entry: ['src/ai.ts'],
+    format: ['esm', 'cjs'],
+    dts: true,
+    clean: false,
+    target: 'es2022',
+    splitting: false,
+    external: ['ai', '@ai-sdk/provider'],
+  },
 ])

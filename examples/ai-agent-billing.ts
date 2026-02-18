@@ -19,6 +19,7 @@ import { generateText } from 'ai'
 import localtunnel from 'localtunnel'
 import { Pulse } from '../src'
 
+
 // ── Config ──────────────────────────────────────────
 const API_KEY = process.env.PULSE_API_KEY
 const BASE_URL = process.env.PULSE_API_BASE_URL || 'http://localhost:3001'
