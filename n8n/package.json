@@ -1,0 +1,45 @@
+{
+  "name": "n8n-nodes-pulse",
+  "version": "0.1.0",
+  "description": "n8n community node for Pulse Payment & Metering API",
+  "license": "MIT",
+  "author": {
+    "name": "Be Infinitum"
+  },
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "pulse",
+    "payment",
+    "metering",
+    "billing"
+  ],
+  "main": "dist/nodes/Pulse/Pulse.node.js",
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/PulseApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Pulse/Pulse.node.js",
+      "dist/nodes/Pulse/PulseTrigger.node.js"
+    ]
+  },
+  "scripts": {
+    "build": "tsc && copyfiles -u 1 \"nodes/**/*.svg\" dist/",
+    "dev": "tsc --watch",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "n8n-workflow": "^1.0.0",
+    "typescript": "^5.6.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": ">=1.0.0"
+  }
+}
