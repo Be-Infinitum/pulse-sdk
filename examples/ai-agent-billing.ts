@@ -4,7 +4,7 @@
  * End-to-end AI agent billing demo that:
  * 1. Creates a product + meters for token-based billing
  * 2. Registers a customer with email
- * 3. Opens a localtunnel and registers a webhook with Pulse
+ * 3. Opens an ngrok tunnel and registers a webhook with Pulse
  * 4. Makes real AI calls (OpenAI + Gemini) and tracks token usage
  * 5. Generates an invoice and waits for the `invoice.created` webhook
  * 6. Sends the invoice email and waits for `payment.confirmed`
@@ -16,13 +16,13 @@
 import { google } from '@ai-sdk/google'
 import { openai } from '@ai-sdk/openai'
 import { generateText } from 'ai'
-import localtunnel from 'localtunnel'
+import ngrok from '@ngrok/ngrok'
 import { Pulse } from '../src'
 
 
 // ── Config ──────────────────────────────────────────
 const API_KEY = process.env.PULSE_API_KEY
-const BASE_URL = process.env.PULSE_API_BASE_URL || 'http://localhost:3001'
+const BASE_URL = process.env.PULSE_API_BASE_URL || 'https://api.beinfi.com'
 const WEBHOOK_PORT = parseInt(process.env.WEBHOOK_PORT || '9876', 10)
 
 if (!API_KEY) {
@@ -143,12 +143,13 @@ async function main() {
   // ── Start Webhook Server ─────────────────────────
   header('4. Start Webhook Listener')
 
-  const tunnel = await localtunnel({ port: WEBHOOK_PORT })
-  activeTunnel = tunnel
-  console.log(`Tunnel open: ${tunnel.url} -> localhost:${WEBHOOK_PORT}`)
+  const listener = await ngrok.forward({ addr: WEBHOOK_PORT, authtoken_from_env: true })
+  const tunnelUrl = listener.url()!
+  activeTunnel = listener
+  console.log(`Tunnel open: ${tunnelUrl} -> localhost:${WEBHOOK_PORT}`)
 
   const webhook = await pulse.webhooks.create({
-    url: tunnel.url,
+    url: tunnelUrl,
     events: ['invoice.created', 'payment.confirmed'],
   })
   console.log(`Webhook registered: ${webhook.id}`)
@@ -269,7 +270,7 @@ async function main() {
   console.log(`Webhook deleted: ${webhook.id}`)
   webhookServer.stop()
   console.log('Webhook server stopped')
-  tunnel.close()
+  await ngrok.disconnect()
   console.log('Tunnel closed')
 
   // ── Done ──────────────────────────────────────────
@@ -288,7 +289,7 @@ Summary:
 
 // ── Graceful shutdown ──────────────────────────────
 let cleanedUp = false
-let activeTunnel: Awaited<ReturnType<typeof localtunnel>> | null = null
+let activeTunnel: ngrok.Listener | null = null
 
 async function cleanup() {
   if (cleanedUp) return
@@ -306,7 +307,7 @@ async function cleanup() {
   }
 
   if (activeTunnel) {
-    activeTunnel.close()
+    await ngrok.disconnect()
     console.log('Tunnel closed')
   }
 }
