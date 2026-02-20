@@ -15,8 +15,8 @@
 
 import { google } from '@ai-sdk/google'
 import { openai } from '@ai-sdk/openai'
-import { generateText } from 'ai'
 import ngrok from '@ngrok/ngrok'
+import { generateText } from 'ai'
 import { Pulse } from '../src'
 
 
