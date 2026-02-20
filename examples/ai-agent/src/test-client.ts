@@ -5,7 +5,7 @@
  *   bun run test-client
  */
 
-import { Pulse } from "@infi/pulse-sdk";
+import { Pulse } from "@beinfi/pulse-sdk";
 
 const PORT = Number(process.env.PORT || 4000);
 const BASE = `http://localhost:${PORT}`;

@@ -6,7 +6,7 @@
  *   bun run setup
  */
 
-import { Pulse } from "@infi/pulse-sdk";
+import { Pulse } from "@beinfi/pulse-sdk";
 
 const apiKey = process.env.PULSE_API_KEY;
 const baseUrl = process.env.PULSE_BASE_URL;

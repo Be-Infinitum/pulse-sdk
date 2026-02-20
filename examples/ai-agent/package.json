@@ -7,7 +7,7 @@
     "test-client": "bun run src/test-client.ts"
   },
   "dependencies": {
-    "@infi/pulse-sdk": "workspace:*",
+    "@beinfi/pulse-sdk": "workspace:*",
     "ai": "^4",
     "@ai-sdk/openai": "^1",
     "@ai-sdk/google": "^1"

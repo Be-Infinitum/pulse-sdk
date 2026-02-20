@@ -1,4 +1,4 @@
-# @infi/pulse-sdk
+# @beinfi/pulse-sdk
 
 > TypeScript SDK for the Pulse Payment Platform. Create payment links,
 > process crypto payments (USDC/USDT on Solana) and PIX payments,

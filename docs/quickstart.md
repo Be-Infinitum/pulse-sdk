@@ -1,17 +1,17 @@
-# Quickstart — @infi/pulse-sdk
+# Quickstart — @beinfi/pulse-sdk
 
 Complete integration guide. Every code block is self-contained and runnable.
 
 ## 1. Install
 
 ```bash
-npm install @infi/pulse-sdk
+npm install @beinfi/pulse-sdk
 ```
 
 ## 2. Create a Client
 
 ```typescript
-import { Pulse } from '@infi/pulse-sdk'
+import { Pulse } from '@beinfi/pulse-sdk'
 
 const pulse = new Pulse('sk_live_your_api_key_here')
 ```
@@ -28,7 +28,7 @@ const pulse = new Pulse({
 ## 3. Create a Payment Link
 
 ```typescript
-import { Pulse } from '@infi/pulse-sdk'
+import { Pulse } from '@beinfi/pulse-sdk'
 
 const pulse = new Pulse('sk_live_your_api_key_here')
 
@@ -64,7 +64,7 @@ console.log(`${confirmed.length} confirmed payments`)
 ## 5. Set Up Webhooks
 
 ```typescript
-import { Pulse } from '@infi/pulse-sdk'
+import { Pulse } from '@beinfi/pulse-sdk'
 
 const pulse = new Pulse('sk_live_your_api_key_here')
 
@@ -87,7 +87,7 @@ When Pulse delivers a webhook, it includes an HMAC-SHA256 signature in the `X-Pu
 
 ```typescript
 import express from 'express'
-import { Pulse, type WebhookPayload } from '@infi/pulse-sdk'
+import { Pulse, type WebhookPayload } from '@beinfi/pulse-sdk'
 
 const app = express()
 
@@ -126,7 +126,7 @@ app.listen(3000)
 
 ```typescript
 // app/api/webhook/route.ts
-import { Pulse, type WebhookPayload } from '@infi/pulse-sdk'
+import { Pulse, type WebhookPayload } from '@beinfi/pulse-sdk'
 
 export async function POST(request: Request) {
   const rawBody = await request.text()
@@ -159,7 +159,7 @@ Mount an iframe-based checkout directly into your page:
 <div id="checkout-container"></div>
 
 <script type="module">
-  import { Pulse } from '@infi/pulse-sdk'
+  import { Pulse } from '@beinfi/pulse-sdk'
 
   const checkout = Pulse.checkout.mount('#checkout-container', {
     linkId: 'your-payment-link-id',
@@ -183,7 +183,7 @@ Mount an iframe-based checkout directly into your page:
 
 ```tsx
 import { useEffect, useRef } from 'react'
-import { Pulse } from '@infi/pulse-sdk'
+import { Pulse } from '@beinfi/pulse-sdk'
 
 export function Checkout({ linkId }: { linkId: string }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -213,7 +213,7 @@ import {
   PulseApiError,
   PulseAuthenticationError,
   PulseRateLimitError,
-} from '@infi/pulse-sdk'
+} from '@beinfi/pulse-sdk'
 
 const pulse = new Pulse('sk_live_your_api_key_here')
 

@@ -1,4 +1,4 @@
-# @infi/pulse-sdk — Complete SDK Reference
+# @beinfi/pulse-sdk — Complete SDK Reference
 
 > TypeScript SDK for the Pulse Payment Platform. Create payment links,
 > process crypto payments (USDC/USDT on Solana) and PIX payments,
@@ -8,13 +8,13 @@
 ## Installation
 
 ```bash
-npm install @infi/pulse-sdk
+npm install @beinfi/pulse-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { Pulse } from '@infi/pulse-sdk'
+import { Pulse } from '@beinfi/pulse-sdk'
 
 // Initialize with API key
 const pulse = new Pulse('sk_live_...')
@@ -264,7 +264,7 @@ const isValid = Pulse.webhooks.verifySignature(
 Or as a standalone import:
 
 ```typescript
-import { verifyWebhookSignature } from '@infi/pulse-sdk'
+import { verifyWebhookSignature } from '@beinfi/pulse-sdk'
 const isValid = verifyWebhookSignature(rawBody, signatureHeader, secret)
 ```
 
@@ -357,7 +357,7 @@ checkout.unmount()
 Or as a standalone import:
 
 ```typescript
-import { mountCheckout } from '@infi/pulse-sdk'
+import { mountCheckout } from '@beinfi/pulse-sdk'
 const instance = mountCheckout('#checkout', { linkId: 'abc-123' })
 ```
 
@@ -365,7 +365,7 @@ const instance = mountCheckout('#checkout', { linkId: 'abc-123' })
 
 ```tsx
 import { useEffect, useRef } from 'react'
-import { Pulse } from '@infi/pulse-sdk'
+import { Pulse } from '@beinfi/pulse-sdk'
 
 function Checkout({ linkId }: { linkId: string }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -443,7 +443,7 @@ import {
   PulseApiError,
   PulseAuthenticationError,
   PulseRateLimitError,
-} from '@infi/pulse-sdk'
+} from '@beinfi/pulse-sdk'
 
 try {
   await pulse.paymentLinks.create({ title: 'Test', amount: '10.00' })

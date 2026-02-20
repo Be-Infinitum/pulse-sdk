@@ -8,7 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@infi/pulse-sdk": "file:../../",
+    "@beinfi/pulse-sdk": "file:../../",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

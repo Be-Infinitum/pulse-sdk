@@ -6,7 +6,7 @@
  *   bun run server
  */
 
-import { Pulse } from "@infi/pulse-sdk";
+import { Pulse } from "@beinfi/pulse-sdk";
 import { generateText, type Experimental_LanguageModelMiddleware } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";

@@ -12,7 +12,7 @@ import type { PulseConfig } from './types'
  *
  * @example
  * ```typescript
- * import { Pulse } from '@infi/pulse-sdk'
+ * import { Pulse } from '@beinfi/pulse-sdk'
  *
  * // Quick setup with just an API key
  * const pulse = new Pulse('sk_live_...')

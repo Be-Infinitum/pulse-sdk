@@ -1,4 +1,4 @@
-# @infi/pulse-sdk — Claude Context
+# @beinfi/pulse-sdk — Claude Context
 
 ## Commands
 - `npm run build` — build ESM + CJS + .d.ts via tsup

@@ -21,7 +21,7 @@ export class PulseTrigger implements INodeType {
 		description: 'Starts workflow when a Pulse payment event occurs',
 		defaults: { name: 'Pulse Trigger' },
 		inputs: [],
-		outputs: [NodeConnectionType.Main],
+		outputs: ['main' as NodeConnectionType],
 		credentials: [
 			{
 				name: 'pulseApi',
@@ -109,11 +109,11 @@ export class PulseTrigger implements INodeType {
 				return true;
 			},
 
-			async delete(this: IHookFunctions): Promise<void> {
+			async delete(this: IHookFunctions): Promise<boolean> {
 				const staticData = this.getWorkflowStaticData('node');
 				const webhookId = staticData.webhookId as string;
 
-				if (!webhookId) return;
+				if (!webhookId) return true;
 
 				const credentials = await this.getCredentials('pulseApi');
 				const baseUrl =
@@ -135,6 +135,7 @@ export class PulseTrigger implements INodeType {
 
 				delete staticData.webhookId;
 				delete staticData.webhookSecret;
+				return true;
 			},
 		},
 	};

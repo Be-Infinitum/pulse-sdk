@@ -1,4 +1,4 @@
-# @infi/pulse-sdk
+# @beinfi/pulse-sdk
 
 TypeScript SDK for the Pulse Payment Platform. Enables developers to create payment links, process crypto/PIX payments, verify webhooks, and embed checkout widgets. Zero runtime dependencies.
 

@@ -13,7 +13,7 @@ import { createHmac, timingSafeEqual } from 'crypto'
  *
  * @example
  * ```typescript
- * import { Pulse } from '@infi/pulse-sdk'
+ * import { Pulse } from '@beinfi/pulse-sdk'
  *
  * // Express/Node.js example
  * app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
@@ -36,7 +36,7 @@ import { createHmac, timingSafeEqual } from 'crypto'
  * @example
  * ```typescript
  * // Standalone import
- * import { verifyWebhookSignature } from '@infi/pulse-sdk'
+ * import { verifyWebhookSignature } from '@beinfi/pulse-sdk'
  *
  * const valid = verifyWebhookSignature(rawBody, signatureHeader, secret)
  * ```

@@ -19,7 +19,7 @@ const DEFAULT_BASE_URL = 'https://pulse.beinfi.com'
  *
  * @example
  * ```typescript
- * import { Pulse } from '@infi/pulse-sdk'
+ * import { Pulse } from '@beinfi/pulse-sdk'
  *
  * // Mount into a div
  * const checkout = Pulse.checkout.mount('#checkout-container', {
@@ -45,7 +45,7 @@ const DEFAULT_BASE_URL = 'https://pulse.beinfi.com'
  * @example
  * ```typescript
  * // Standalone import
- * import { mountCheckout } from '@infi/pulse-sdk'
+ * import { mountCheckout } from '@beinfi/pulse-sdk'
  *
  * const instance = mountCheckout('#checkout', { linkId: 'abc-123' })
  * ```
