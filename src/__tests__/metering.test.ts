@@ -189,16 +189,15 @@ describe('MeteringResource', () => {
 
   describe('getUsage', () => {
     it('gets usage without filters', async () => {
-      const usage = { data: [{ meterId: 'm1', totalValue: '100' }] }
-      const fetch = mockFetch(usage)
+      // The API returns { data: UsageResponse }, HttpClient unwraps the outer { data } envelope.
+      // So we mock the raw API response and expect the unwrapped result.
+      const usageItems = [{ meterId: 'm1', totalValue: '100' }]
+      const fetch = mockFetch({ data: usageItems })
       vi.stubGlobal('fetch', fetch)
 
       const result = await resource.getUsage()
 
-      // getUsage returns UsageResponse which itself has .data — but HttpClient unwraps envelope
-      // Actually UsageResponse = { data: UsageItem[] }, and the API returns { data: UsageResponse }
-      // HttpClient unwraps the outer envelope, so result = UsageResponse = { data: [...] }
-      expect(result).toEqual(usage)
+      expect(result).toEqual(usageItems)
     })
 
     it('gets usage with filters', async () => {
