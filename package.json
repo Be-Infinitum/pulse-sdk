@@ -1,6 +1,6 @@
 {
   "name": "@beinfi/pulse-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TypeScript SDK for the Pulse Payment Platform API",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -18,12 +18,12 @@
     },
     "./ai": {
       "import": {
-        "types": "./dist/ai.d.mts",
-        "default": "./dist/ai.mjs"
-      },
-      "require": {
         "types": "./dist/ai.d.ts",
         "default": "./dist/ai.js"
+      },
+      "require": {
+        "types": "./dist/ai.d.cts",
+        "default": "./dist/ai.cjs"
       }
     }
   },
@@ -82,6 +82,7 @@
       "optional": true
     }
   },
+  "type": "module",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
