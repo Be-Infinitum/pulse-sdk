@@ -388,7 +388,7 @@ function Checkout({ linkId }: { linkId: string }) {
 ```typescript
 interface CheckoutMountOptions {
   linkId: string
-  baseUrl?: string              // default: "https://pulse.beinfi.com"
+  baseUrl?: string              // default: "https://app.beinfi.com"
   theme?: CheckoutTheme
   onReady?: () => void
   onSuccess?: (payment: CheckoutPayment) => void
