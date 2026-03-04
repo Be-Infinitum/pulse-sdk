@@ -40,7 +40,7 @@ const link = await pulse.paymentLinks.create({
 })
 
 console.log('Payment link created:', link.id)
-console.log('Share this URL: https://pulse.beinfi.com/pay/' + link.slug)
+console.log('Share this URL: https://app.beinfi.com/pay/' + link.slug)
 ```
 
 ## 4. List and Fetch Payment Links

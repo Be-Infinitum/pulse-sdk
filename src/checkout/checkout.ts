@@ -1,11 +1,11 @@
 import type {
-  CheckoutMountOptions,
-  CheckoutInstance,
-  CheckoutPayment,
-  CheckoutError,
+    CheckoutError,
+    CheckoutInstance,
+    CheckoutMountOptions,
+    CheckoutPayment,
 } from './types'
 
-const DEFAULT_BASE_URL = 'https://pulse.beinfi.com'
+const DEFAULT_BASE_URL = 'https://app.beinfi.com'
 
 /**
  * Mount the Pulse checkout widget into a DOM element.

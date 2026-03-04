@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mountCheckout } from '../checkout/checkout'
 
 // Mock DOM environment
@@ -77,7 +77,7 @@ describe('mountCheckout', () => {
   it('creates iframe with correct src', () => {
     mountCheckout('#checkout', { linkId: 'link-123' })
 
-    expect(mockIframe.src).toBe('https://pulse.beinfi.com/embed/pay/link-123')
+    expect(mockIframe.src).toBe('https://app.beinfi.com/embed/pay/link-123')
   })
 
   it('creates iframe with custom baseUrl', () => {
@@ -104,7 +104,7 @@ describe('mountCheckout', () => {
   describe('message handling', () => {
     function dispatchMessage(type: string, data?: Record<string, unknown>) {
       const event = {
-        origin: 'https://pulse.beinfi.com',
+        origin: 'https://app.beinfi.com',
         data: { type, ...data },
       } as MessageEvent
       for (const handler of messageHandlers) handler(event)
@@ -127,7 +127,7 @@ describe('mountCheckout', () => {
 
       expect(mockIframe.contentWindow.postMessage).toHaveBeenCalledWith(
         { type: 'pulse:config', theme },
-        'https://pulse.beinfi.com'
+        'https://app.beinfi.com'
       )
     })
 
@@ -176,7 +176,7 @@ describe('mountCheckout', () => {
   describe('on() event handler', () => {
     function dispatchMessage(type: string, data?: Record<string, unknown>) {
       const event = {
-        origin: 'https://pulse.beinfi.com',
+        origin: 'https://app.beinfi.com',
         data: { type, ...data },
       } as MessageEvent
       for (const handler of messageHandlers) handler(event)

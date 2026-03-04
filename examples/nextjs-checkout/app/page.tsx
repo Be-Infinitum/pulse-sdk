@@ -64,7 +64,7 @@ export default function Home() {
   }
 
   function getPaymentUrl(link: PaymentLink) {
-    return `https://pulse.beinfi.com/pay/${link.id}`
+    return `https://app.beinfi.com/pay/${link.id}`
   }
 
   async function copyUrl() {

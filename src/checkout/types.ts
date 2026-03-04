@@ -68,7 +68,7 @@ export interface CheckoutTheme {
 export interface CheckoutMountOptions {
   /** The payment link ID to load in the checkout widget. */
   linkId: string
-  /** Override the checkout base URL. Defaults to `https://pulse.beinfi.com`. */
+  /** Override the checkout base URL. Defaults to `https://app.beinfi.com`. */
   baseUrl?: string
   /** Custom theme colors for the checkout widget. */
   theme?: CheckoutTheme
