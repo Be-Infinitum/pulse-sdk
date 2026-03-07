@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Optional, Union
 
+from .billing import BillingResource, AsyncBillingResource
 from .http_client import HttpClient, AsyncHttpClient
 from .metering import MeteringResource, AsyncMeteringResource
 
@@ -44,6 +45,7 @@ class Pulse:
     ) -> None:
         self._client = HttpClient(api_key, base_url)
         self.metering = MeteringResource(self._client)
+        self.billing = BillingResource(self._client)
 
     def close(self) -> None:
         """Close the underlying HTTP client."""
@@ -79,6 +81,7 @@ class AsyncPulse:
     ) -> None:
         self._client = AsyncHttpClient(api_key, base_url)
         self.metering = AsyncMeteringResource(self._client)
+        self.billing = AsyncBillingResource(self._client)
 
     async def close(self) -> None:
         """Close the underlying async HTTP client."""

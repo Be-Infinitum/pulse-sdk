@@ -9,6 +9,7 @@ from .http_client import HttpClient, AsyncHttpClient
 from .types import (
     BatchTrackResponse,
     CreateCustomerParams,
+    CreditBalance,
     MeteringProduct,
     ProductCustomer,
     TrackEventParams,
@@ -134,6 +135,93 @@ class MeteringResource:
         if isinstance(data, list):
             return [MeteringProduct.from_dict(p) for p in data]
         return []
+
+    def create_product(
+        self,
+        *,
+        name: str,
+        type: Optional[str] = None,
+        description: Optional[str] = None,
+        pricing_model: Optional[str] = None,
+        price: Optional[str] = None,
+        billing_cycle: Optional[str] = None,
+        currency: Optional[str] = None,
+    ) -> MeteringProduct:
+        """Create a new product.
+
+        Args:
+            name: Product name.
+            type: Product type (``agent`` or ``item``).
+            description: Optional description.
+            pricing_model: One of ``subscription``, ``one_time``, ``usage``, ``prepaid``.
+            price: Base price as a decimal string.
+            billing_cycle: One of ``weekly``, ``monthly``, ``annual``.
+            currency: ISO currency code (default ``USD``).
+
+        Returns:
+            The created product.
+        """
+        body: Dict[str, Any] = {"name": name}
+        if type is not None:
+            body["type"] = type
+        if description is not None:
+            body["description"] = description
+        if pricing_model is not None:
+            body["pricingModel"] = pricing_model
+        if price is not None:
+            body["price"] = price
+        if billing_cycle is not None:
+            body["billingCycle"] = billing_cycle
+        if currency is not None:
+            body["currency"] = currency
+
+        data = self._client.request("POST", "/metering/products", json=body)
+        return MeteringProduct.from_dict(data)
+
+    def get_credit_balance(
+        self,
+        product_id: str,
+        customer_id: str,
+    ) -> CreditBalance:
+        """Get the credit balance for a prepaid customer.
+
+        Args:
+            product_id: The product UUID.
+            customer_id: The product customer UUID.
+
+        Returns:
+            Current credit balance info.
+        """
+        data = self._client.request(
+            "GET",
+            f"/billing/products/{product_id}/customers/{customer_id}/credit",
+        )
+        return CreditBalance.from_dict(data)
+
+    def activate_credit(
+        self,
+        product_id: str,
+        customer_id: str,
+        amount: str,
+    ) -> CreditBalance:
+        """Activate (add) credits for a prepaid customer.
+
+        Credits are accumulative — adding to an existing balance increases it.
+
+        Args:
+            product_id: The product UUID.
+            customer_id: The product customer UUID.
+            amount: Credit amount to add (as a decimal string).
+
+        Returns:
+            Updated credit balance info.
+        """
+        data = self._client.request(
+            "POST",
+            f"/billing/products/{product_id}/customers/{customer_id}/credit",
+            json={"amount": amount},
+        )
+        return CreditBalance.from_dict(data)
 
     def create_customer(
         self,
@@ -307,6 +395,61 @@ class AsyncMeteringResource:
         if isinstance(data, list):
             return [MeteringProduct.from_dict(p) for p in data]
         return []
+
+    async def create_product(
+        self,
+        *,
+        name: str,
+        type: Optional[str] = None,
+        description: Optional[str] = None,
+        pricing_model: Optional[str] = None,
+        price: Optional[str] = None,
+        billing_cycle: Optional[str] = None,
+        currency: Optional[str] = None,
+    ) -> MeteringProduct:
+        """Create a new product (async)."""
+        body: Dict[str, Any] = {"name": name}
+        if type is not None:
+            body["type"] = type
+        if description is not None:
+            body["description"] = description
+        if pricing_model is not None:
+            body["pricingModel"] = pricing_model
+        if price is not None:
+            body["price"] = price
+        if billing_cycle is not None:
+            body["billingCycle"] = billing_cycle
+        if currency is not None:
+            body["currency"] = currency
+
+        data = await self._client.request("POST", "/metering/products", json=body)
+        return MeteringProduct.from_dict(data)
+
+    async def get_credit_balance(
+        self,
+        product_id: str,
+        customer_id: str,
+    ) -> CreditBalance:
+        """Get the credit balance for a prepaid customer (async)."""
+        data = await self._client.request(
+            "GET",
+            f"/billing/products/{product_id}/customers/{customer_id}/credit",
+        )
+        return CreditBalance.from_dict(data)
+
+    async def activate_credit(
+        self,
+        product_id: str,
+        customer_id: str,
+        amount: str,
+    ) -> CreditBalance:
+        """Activate (add) credits for a prepaid customer (async)."""
+        data = await self._client.request(
+            "POST",
+            f"/billing/products/{product_id}/customers/{customer_id}/credit",
+            json={"amount": amount},
+        )
+        return CreditBalance.from_dict(data)
 
     async def create_customer(
         self,

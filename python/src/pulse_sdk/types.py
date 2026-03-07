@@ -124,8 +124,13 @@ class MeteringProduct:
 
     id: str
     name: str
+    type: str
+    pricing_model: str
+    currency: str
     status: str
     description: Optional[str] = None
+    price: Optional[str] = None
+    billing_cycle: Optional[str] = None
     meters: List[Dict[str, Any]] = field(default_factory=list)
 
     @classmethod
@@ -133,8 +138,13 @@ class MeteringProduct:
         return cls(
             id=data["id"],
             name=data["name"],
+            type=data.get("type", "agent"),
+            pricing_model=data.get("pricingModel", "subscription"),
+            currency=data.get("currency", "USD"),
             status=data["status"],
             description=data.get("description"),
+            price=data.get("price"),
+            billing_cycle=data.get("billingCycle"),
             meters=data.get("meters", []),
         )
 
@@ -147,6 +157,9 @@ class ProductCustomer:
     external_id: str
     name: Optional[str] = None
     email: Optional[str] = None
+    credit_balance: Optional[str] = None
+    credit_total: Optional[str] = None
+    credit_alert_sent: bool = False
     created_at: Optional[str] = None
 
     @classmethod
@@ -156,5 +169,91 @@ class ProductCustomer:
             external_id=data["externalId"],
             name=data.get("name"),
             email=data.get("email"),
+            credit_balance=data.get("creditBalance"),
+            credit_total=data.get("creditTotal"),
+            credit_alert_sent=data.get("creditAlertSent", False),
             created_at=data.get("createdAt"),
+        )
+
+
+@dataclass
+class CreditBalance:
+    """Credit balance for a prepaid customer."""
+
+    credit_balance: Optional[str]
+    credit_total: Optional[str]
+    credit_alert_sent: bool
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "CreditBalance":
+        return cls(
+            credit_balance=data.get("creditBalance"),
+            credit_total=data.get("creditTotal"),
+            credit_alert_sent=data.get("creditAlertSent", False),
+        )
+
+
+@dataclass
+class Subscription:
+    """A subscription object."""
+
+    id: str
+    status: str
+    billing_cycle: str
+    current_period_start: str
+    current_period_end: str
+    next_billing_date: str
+    created_at: str
+    product_customer: Dict[str, Any]
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Subscription":
+        return cls(
+            id=data["id"],
+            status=data["status"],
+            billing_cycle=data["billingCycle"],
+            current_period_start=data["currentPeriodStart"],
+            current_period_end=data["currentPeriodEnd"],
+            next_billing_date=data["nextBillingDate"],
+            created_at=data["createdAt"],
+            product_customer=data.get("productCustomer", {}),
+        )
+
+
+@dataclass
+class Invoice:
+    """An invoice object."""
+
+    id: str
+    invoice_number: str
+    status: str
+    period_start: str
+    period_end: str
+    subtotal: str
+    total: str
+    currency: str
+    created_at: str
+    line_items: List[Dict[str, Any]] = field(default_factory=list)
+    product_customer: Optional[Dict[str, Any]] = None
+    payment_link_id: Optional[str] = None
+    paid_at: Optional[str] = None
+    due_date: Optional[str] = None
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Invoice":
+        return cls(
+            id=data["id"],
+            invoice_number=data["invoiceNumber"],
+            status=data["status"],
+            period_start=data["periodStart"],
+            period_end=data["periodEnd"],
+            subtotal=data["subtotal"],
+            total=data["total"],
+            currency=data["currency"],
+            created_at=data["createdAt"],
+            line_items=data.get("lineItems", []),
+            product_customer=data.get("productCustomer"),
+            payment_link_id=data.get("paymentLinkId"),
+            paid_at=data.get("paidAt"),
+            due_date=data.get("dueDate"),
         )

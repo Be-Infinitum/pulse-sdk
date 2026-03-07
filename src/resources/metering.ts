@@ -1,4 +1,4 @@
-import type { HttpClient } from '../client'
+import type { HttpClient } from "../client";
 import type {
   TrackEventParams,
   TrackEventResponse,
@@ -11,16 +11,17 @@ import type {
   MeteringProduct,
   Meter,
   ProductCustomer,
-} from '../types'
+  CreditBalance,
+} from "../types";
 
 function generateId(): string {
-  const hex = '0123456789abcdef'
-  let id = ''
+  const hex = "0123456789abcdef";
+  let id = "";
   for (let i = 0; i < 32; i++) {
-    id += hex[Math.floor(Math.random() * 16)]
-    if (i === 7 || i === 11 || i === 15 || i === 19) id += '-'
+    id += hex[Math.floor(Math.random() * 16)];
+    if (i === 7 || i === 11 || i === 15 || i === 19) id += "-";
   }
-  return id
+  return id;
 }
 
 /**
@@ -62,23 +63,16 @@ export class MeteringResource {
    * ```
    */
   async track(params: TrackEventParams): Promise<TrackEventResponse> {
-    return this.client.request<TrackEventResponse>(
-      'POST',
-      '/metering/events',
-      {
-        body: {
-          eventId: params.eventId || generateId(),
-          meterId: params.meterId,
-          customerId: params.customerId,
-          value:
-            typeof params.value === 'number'
-              ? String(params.value)
-              : params.value,
-          timestamp: params.timestamp?.toISOString(),
-          metadata: params.metadata,
-        },
-      }
-    )
+    return this.client.request<TrackEventResponse>("POST", "/metering/events", {
+      body: {
+        eventId: params.eventId || generateId(),
+        meterId: params.meterId,
+        customerId: params.customerId,
+        value: typeof params.value === "number" ? String(params.value) : params.value,
+        timestamp: params.timestamp?.toISOString(),
+        metadata: params.metadata,
+      },
+    });
   }
 
   /**
@@ -96,22 +90,18 @@ export class MeteringResource {
    * ```
    */
   async trackBatch(events: TrackEventParams[]): Promise<BatchTrackResponse> {
-    return this.client.request<BatchTrackResponse>(
-      'POST',
-      '/metering/events/batch',
-      {
-        body: {
-          events: events.map((e) => ({
-            eventId: e.eventId || generateId(),
-            meterId: e.meterId,
-            customerId: e.customerId,
-            value: typeof e.value === 'number' ? String(e.value) : e.value,
-            timestamp: e.timestamp?.toISOString(),
-            metadata: e.metadata,
-          })),
-        },
-      }
-    )
+    return this.client.request<BatchTrackResponse>("POST", "/metering/events/batch", {
+      body: {
+        events: events.map((e) => ({
+          eventId: e.eventId || generateId(),
+          meterId: e.meterId,
+          customerId: e.customerId,
+          value: typeof e.value === "number" ? String(e.value) : e.value,
+          timestamp: e.timestamp?.toISOString(),
+          metadata: e.metadata,
+        })),
+      },
+    });
   }
 
   /**
@@ -129,13 +119,13 @@ export class MeteringResource {
    * ```
    */
   async getUsage(query?: UsageQuery): Promise<UsageResponse> {
-    return this.client.request<UsageResponse>('GET', '/metering/usage', {
+    return this.client.request<UsageResponse>("GET", "/metering/usage", {
       query: {
         customerId: query?.customerId,
         startDate: query?.startDate,
         endDate: query?.endDate,
       },
-    })
+    });
   }
 
   /**
@@ -144,7 +134,7 @@ export class MeteringResource {
    * @returns Array of product objects with meters.
    */
   async listProducts(): Promise<MeteringProduct[]> {
-    return this.client.request<MeteringProduct[]>('GET', '/metering/products')
+    return this.client.request<MeteringProduct[]>("GET", "/metering/products");
   }
 
   /**
@@ -162,11 +152,17 @@ export class MeteringResource {
    * ```
    */
   async createProduct(data: CreateProductParams): Promise<MeteringProduct> {
-    return this.client.request<MeteringProduct>(
-      'POST',
-      '/metering/products',
-      { body: data }
-    )
+    return this.client.request<MeteringProduct>("POST", "/metering/products", {
+      body: {
+        name: data.name,
+        type: data.type,
+        description: data.description,
+        pricingModel: data.pricingModel,
+        price: data.price,
+        billingCycle: data.billingCycle,
+        currency: data.currency,
+      },
+    });
   }
 
   /**
@@ -186,15 +182,10 @@ export class MeteringResource {
    * })
    * ```
    */
-  async createMeter(
-    productId: string,
-    data: CreateMeterParams
-  ): Promise<Meter> {
-    return this.client.request<Meter>(
-      'POST',
-      `/metering/products/${productId}/meters`,
-      { body: data }
-    )
+  async createMeter(productId: string, data: CreateMeterParams): Promise<Meter> {
+    return this.client.request<Meter>("POST", `/metering/products/${productId}/meters`, {
+      body: data,
+    });
   }
 
   /**
@@ -213,15 +204,12 @@ export class MeteringResource {
    * })
    * ```
    */
-  async createCustomer(
-    productId: string,
-    data: CreateCustomerParams
-  ): Promise<ProductCustomer> {
+  async createCustomer(productId: string, data: CreateCustomerParams): Promise<ProductCustomer> {
     return this.client.request<ProductCustomer>(
-      'POST',
+      "POST",
       `/metering/products/${productId}/customers`,
-      { body: data }
-    )
+      { body: data },
+    );
   }
 
   /**
@@ -235,18 +223,65 @@ export class MeteringResource {
   async getCustomerUsage(
     productId: string,
     customerId: string,
-    query?: { startDate?: string; endDate?: string }
+    query?: { startDate?: string; endDate?: string },
   ): Promise<UsageResponse> {
     return this.client.request<UsageResponse>(
-      'GET',
+      "GET",
       `/metering/products/${productId}/customers/${customerId}/usage`,
       {
         query: {
           startDate: query?.startDate,
           endDate: query?.endDate,
         },
-      }
-    )
+      },
+    );
+  }
+
+  /**
+   * Get the credit balance for a prepaid customer.
+   *
+   * @param productId - The product UUID.
+   * @param customerId - The product customer UUID.
+   * @returns Current credit balance info.
+   *
+   * @example
+   * ```typescript
+   * const credit = await pulse.metering.getCreditBalance('product-id', 'customer-id')
+   * console.log(`Balance: ${credit.creditBalance} / ${credit.creditTotal}`)
+   * ```
+   */
+  async getCreditBalance(productId: string, customerId: string): Promise<CreditBalance> {
+    return this.client.request<CreditBalance>(
+      "GET",
+      `/billing/products/${productId}/customers/${customerId}/credit`,
+    );
+  }
+
+  /**
+   * Activate (add) credits for a prepaid customer.
+   * Credits are accumulative — adding to an existing balance increases it.
+   *
+   * @param productId - The product UUID.
+   * @param customerId - The product customer UUID.
+   * @param amount - Credit amount to add (as a decimal string).
+   * @returns Updated credit balance info.
+   *
+   * @example
+   * ```typescript
+   * const credit = await pulse.metering.activateCredit('product-id', 'customer-id', '10000')
+   * console.log(`New balance: ${credit.creditBalance}`)
+   * ```
+   */
+  async activateCredit(
+    productId: string,
+    customerId: string,
+    amount: string,
+  ): Promise<CreditBalance> {
+    return this.client.request<CreditBalance>(
+      "POST",
+      `/billing/products/${productId}/customers/${customerId}/credit`,
+      { body: { amount } },
+    );
   }
 
   /**
@@ -266,7 +301,7 @@ export class MeteringResource {
    * ```
    */
   session(customerId: string): MeteringSession {
-    return new MeteringSession(this, customerId)
+    return new MeteringSession(this, customerId);
   }
 }
 
@@ -274,28 +309,24 @@ export class MeteringResource {
  * A session accumulates track calls and sends them as a batch.
  */
 class MeteringSession {
-  private events: TrackEventParams[] = []
+  private events: TrackEventParams[] = [];
 
   constructor(
     private readonly metering: MeteringResource,
-    private readonly customerId: string
+    private readonly customerId: string,
   ) {}
 
   /**
    * Queue a tracking event in this session.
    */
-  track(
-    meterId: string,
-    value: number | string,
-    metadata?: Record<string, unknown>
-  ): this {
+  track(meterId: string, value: number | string, metadata?: Record<string, unknown>): this {
     this.events.push({
       meterId,
       customerId: this.customerId,
       value,
       metadata,
-    })
-    return this
+    });
+    return this;
   }
 
   /**
@@ -303,10 +334,10 @@ class MeteringSession {
    */
   async end(): Promise<BatchTrackResponse> {
     if (this.events.length === 0) {
-      return { accepted: 0, failed: 0, results: [] }
+      return { accepted: 0, failed: 0, results: [] };
     }
-    const result = await this.metering.trackBatch(this.events)
-    this.events = []
-    return result
+    const result = await this.metering.trackBatch(this.events);
+    this.events = [];
+    return result;
   }
 }

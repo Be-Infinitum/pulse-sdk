@@ -1,10 +1,11 @@
-import { HttpClient } from './client'
-import { PaymentLinksResource } from './resources/payment-links'
-import { WebhooksResource } from './resources/webhooks'
-import { MeteringResource } from './resources/metering'
-import { verifyWebhookSignature } from './webhooks/verify'
-import { mountCheckout } from './checkout/checkout'
-import type { PulseConfig } from './types'
+import { HttpClient } from "./client";
+import { PaymentLinksResource } from "./resources/payment-links";
+import { WebhooksResource } from "./resources/webhooks";
+import { MeteringResource } from "./resources/metering";
+import { BillingResource } from "./resources/billing";
+import { verifyWebhookSignature } from "./webhooks/verify";
+import { mountCheckout } from "./checkout/checkout";
+import type { PulseConfig } from "./types";
 
 /**
  * Main entry point for the Pulse SDK.
@@ -38,13 +39,15 @@ import type { PulseConfig } from './types'
  */
 export class Pulse {
   /** Resource for creating, listing, and fetching payment links. */
-  public readonly paymentLinks: PaymentLinksResource
+  public readonly paymentLinks: PaymentLinksResource;
   /** Resource for creating, listing, and deleting webhook subscriptions. */
-  public readonly webhooks: WebhooksResource
+  public readonly webhooks: WebhooksResource;
   /** Resource for usage-based metering, tracking events, and querying usage. */
-  public readonly metering: MeteringResource
+  public readonly metering: MeteringResource;
+  /** Resource for billing operations: subscriptions, invoices, and credits. */
+  public readonly billing: BillingResource;
 
-  private readonly client: HttpClient
+  private readonly client: HttpClient;
 
   /**
    * Static utilities for verifying webhook signatures.
@@ -61,7 +64,7 @@ export class Pulse {
    */
   static webhooks = {
     verifySignature: verifyWebhookSignature,
-  }
+  };
 
   /**
    * Static utilities for mounting the checkout widget.
@@ -77,7 +80,7 @@ export class Pulse {
    */
   static checkout = {
     mount: mountCheckout,
-  }
+  };
 
   /**
    * Create a new Pulse SDK client.
@@ -95,24 +98,26 @@ export class Pulse {
    * ```
    */
   constructor(config: string | PulseConfig) {
-    const apiKey = typeof config === 'string' ? config : config.apiKey
-    const baseUrl = typeof config === 'string' ? undefined : config.baseUrl
+    const apiKey = typeof config === "string" ? config : config.apiKey;
+    const baseUrl = typeof config === "string" ? undefined : config.baseUrl;
 
-    this.client = new HttpClient(apiKey, baseUrl)
-    this.paymentLinks = new PaymentLinksResource(this.client)
-    this.webhooks = new WebhooksResource(this.client)
-    this.metering = new MeteringResource(this.client)
+    this.client = new HttpClient(apiKey, baseUrl);
+    this.paymentLinks = new PaymentLinksResource(this.client);
+    this.webhooks = new WebhooksResource(this.client);
+    this.metering = new MeteringResource(this.client);
+    this.billing = new BillingResource(this.client);
   }
 }
 
-export { verifyWebhookSignature } from './webhooks/verify'
+export { verifyWebhookSignature } from "./webhooks/verify";
 
 export {
   PulseError,
   PulseApiError,
   PulseAuthenticationError,
   PulseRateLimitError,
-} from './errors'
+  PulseCreditExhaustedError,
+} from "./errors";
 
 export type {
   PulseConfig,
@@ -140,13 +145,18 @@ export type {
   MeteringProduct,
   Meter,
   ProductCustomer,
-} from './types'
+  CreditBalance,
+  Subscription,
+  ListSubscriptionsParams,
+  Invoice,
+  GenerateInvoiceParams,
+} from "./types";
 
-export { mountCheckout } from './checkout/checkout'
+export { mountCheckout } from "./checkout/checkout";
 export type {
   CheckoutMountOptions,
   CheckoutPayment,
   CheckoutError,
   CheckoutInstance,
   CheckoutTheme,
-} from './checkout/types'
+} from "./checkout/types";

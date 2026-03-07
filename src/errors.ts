@@ -1,4 +1,4 @@
-import type { RateLimitInfo } from './types'
+import type { RateLimitInfo } from "./types";
 
 /**
  * Base error class for all Pulse SDK errors.
@@ -17,8 +17,8 @@ import type { RateLimitInfo } from './types'
  */
 export class PulseError extends Error {
   constructor(message: string) {
-    super(message)
-    this.name = 'PulseError'
+    super(message);
+    this.name = "PulseError";
   }
 }
 
@@ -39,23 +39,18 @@ export class PulseError extends Error {
  */
 export class PulseApiError extends PulseError {
   /** HTTP status code (e.g. 400, 404, 500). */
-  public readonly status: number
+  public readonly status: number;
   /** Machine-readable error code (e.g. `"unauthorized"`, `"not_found"`). */
-  public readonly errorCode: string
+  public readonly errorCode: string;
   /** Rate limit info from response headers, if available. */
-  public readonly rateLimit?: RateLimitInfo
+  public readonly rateLimit?: RateLimitInfo;
 
-  constructor(
-    status: number,
-    errorCode: string,
-    message: string,
-    rateLimit?: RateLimitInfo
-  ) {
-    super(message)
-    this.name = 'PulseApiError'
-    this.status = status
-    this.errorCode = errorCode
-    this.rateLimit = rateLimit
+  constructor(status: number, errorCode: string, message: string, rateLimit?: RateLimitInfo) {
+    super(message);
+    this.name = "PulseApiError";
+    this.status = status;
+    this.errorCode = errorCode;
+    this.rateLimit = rateLimit;
   }
 }
 
@@ -74,9 +69,9 @@ export class PulseApiError extends PulseError {
  * ```
  */
 export class PulseAuthenticationError extends PulseApiError {
-  constructor(message: string = 'Invalid API key') {
-    super(401, 'unauthorized', message)
-    this.name = 'PulseAuthenticationError'
+  constructor(message: string = "Invalid API key") {
+    super(401, "unauthorized", message);
+    this.name = "PulseAuthenticationError";
   }
 }
 
@@ -98,11 +93,33 @@ export class PulseAuthenticationError extends PulseApiError {
  */
 export class PulseRateLimitError extends PulseApiError {
   /** Number of seconds to wait before retrying. */
-  public readonly retryAfter: number
+  public readonly retryAfter: number;
 
   constructor(retryAfter: number, rateLimit?: RateLimitInfo) {
-    super(429, 'rate_limit_exceeded', 'Rate limit exceeded', rateLimit)
-    this.name = 'PulseRateLimitError'
-    this.retryAfter = retryAfter
+    super(429, "rate_limit_exceeded", "Rate limit exceeded", rateLimit);
+    this.name = "PulseRateLimitError";
+    this.retryAfter = retryAfter;
+  }
+}
+
+/**
+ * Error thrown when a prepaid customer has insufficient credit (HTTP 402).
+ * Occurs when `track()` is called on a prepaid product with zero balance.
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await pulse.metering.track({ meterId: 'tokens', customerId: 'user_123', value: 100 })
+ * } catch (err) {
+ *   if (err instanceof PulseCreditExhaustedError) {
+ *     console.log('Customer needs to purchase more credits')
+ *   }
+ * }
+ * ```
+ */
+export class PulseCreditExhaustedError extends PulseApiError {
+  constructor(message: string = "Insufficient credit balance") {
+    super(402, "credit_exhausted", message);
+    this.name = "PulseCreditExhaustedError";
   }
 }

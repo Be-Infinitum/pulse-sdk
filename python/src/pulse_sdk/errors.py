@@ -38,3 +38,10 @@ class PulseRateLimitError(PulseApiError):
     def __init__(self, retry_after: int = 60) -> None:
         super().__init__(429, "rate_limit_exceeded", "Rate limit exceeded")
         self.retry_after = retry_after
+
+
+class PulseCreditExhaustedError(PulseApiError):
+    """Raised on HTTP 402 when a prepaid customer has insufficient credit."""
+
+    def __init__(self, message: str = "Insufficient credit balance") -> None:
+        super().__init__(402, "credit_exhausted", message)

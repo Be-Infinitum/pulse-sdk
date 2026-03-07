@@ -9,6 +9,7 @@ import httpx
 from .errors import (
     PulseApiError,
     PulseAuthenticationError,
+    PulseCreditExhaustedError,
     PulseError,
     PulseRateLimitError,
 )
@@ -79,6 +80,9 @@ class HttpClient:
 
         if response.status_code == 401:
             raise PulseAuthenticationError(message)
+
+        if response.status_code == 402 and error_code == "credit_exhausted":
+            raise PulseCreditExhaustedError(message)
 
         if response.status_code == 429:
             retry_after = int(response.headers.get("Retry-After", "60"))
@@ -158,6 +162,9 @@ class AsyncHttpClient:
 
         if response.status_code == 401:
             raise PulseAuthenticationError(message)
+
+        if response.status_code == 402 and error_code == "credit_exhausted":
+            raise PulseCreditExhaustedError(message)
 
         if response.status_code == 429:
             retry_after = int(response.headers.get("Retry-After", "60"))

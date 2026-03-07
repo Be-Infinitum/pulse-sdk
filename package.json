@@ -37,7 +37,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "prepublishOnly": "npm run build",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "lint": "eslint --fix"
   },
   "keywords": [
     "pulse",
