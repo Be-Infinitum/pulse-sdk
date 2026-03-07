@@ -37,7 +37,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "prepublishOnly": "npm run build",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "keywords": [
     "pulse",
@@ -87,7 +87,9 @@
     }
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,json}": ["bunx biome check --write"]
+    "*.{ts,tsx,js,jsx,json}": [
+      "bunx biome check --write"
+    ]
   },
   "type": "module",
   "license": "MIT",

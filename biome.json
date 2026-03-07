@@ -16,7 +16,6 @@
     "indentWidth": 2
   },
   "files": {
-    "includes": ["src/**/*.ts", "src/**/*.tsx"],
     "experimentalScannerIgnores": ["node_modules", "dist"]
   }
 }
