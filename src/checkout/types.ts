@@ -66,8 +66,12 @@ export interface CheckoutTheme {
  * ```
  */
 export interface CheckoutMountOptions {
-  /** The payment link ID to load in the checkout widget. */
-  linkId: string
+  /** The payment link ID to load in the checkout widget. Provide either linkId OR (productId + publishableKey). */
+  linkId?: string
+  /** The product ID to load in the checkout widget. Requires publishableKey. */
+  productId?: string
+  /** The publishable key (pk_live_) for product-based checkout. Required when using productId. */
+  publishableKey?: string
   /** Override the checkout base URL. Defaults to `https://app.beinfi.com`. */
   baseUrl?: string
   /** Custom theme colors for the checkout widget. */

@@ -61,6 +61,19 @@ export function mountCheckout(
     throw new Error(`[Pulse Checkout] Container not found: ${selector}`)
   }
 
+  // Validate: either linkId OR (productId + publishableKey), not both
+  const hasLink = !!options.linkId
+  const hasProduct = !!options.productId
+  if (!hasLink && !hasProduct) {
+    throw new Error('[Pulse Checkout] Either linkId or productId is required')
+  }
+  if (hasLink && hasProduct) {
+    throw new Error('[Pulse Checkout] Provide either linkId or productId, not both')
+  }
+  if (hasProduct && !options.publishableKey) {
+    throw new Error('[Pulse Checkout] publishableKey is required when using productId')
+  }
+
   const baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, '')
   const allowedOrigin = new URL(baseUrl).origin
 
@@ -73,9 +86,17 @@ export function mountCheckout(
     }
   }
 
+  // Build iframe URL
+  let iframeSrc: string
+  if (options.productId) {
+    iframeSrc = `${baseUrl}/embed/pay/product/${options.productId}?pk=${encodeURIComponent(options.publishableKey!)}`
+  } else {
+    iframeSrc = `${baseUrl}/embed/pay/${options.linkId}`
+  }
+
   // Create iframe
   const iframe = document.createElement('iframe')
-  iframe.src = `${baseUrl}/embed/pay/${options.linkId}`
+  iframe.src = iframeSrc
   iframe.style.width = '100%'
   iframe.style.border = 'none'
   iframe.style.colorScheme = 'normal'
